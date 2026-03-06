@@ -79,7 +79,7 @@ function App() {
           </Typography>
           <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 2 }}>
             30,000件超の納品実績データに基づき、<br />
-            イベント売上目標から酒仕入予算とオリシャン本数を高精度で計算します。
+            月間売上目標から酒仕入予算とオリシャン本数を高精度で計算します。
           </Typography>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

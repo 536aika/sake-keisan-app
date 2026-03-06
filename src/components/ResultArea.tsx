@@ -19,7 +19,7 @@ export function ResultArea({ result }: ResultAreaProps) {
       <Card variant="outlined" sx={{ borderRadius: 2, bgcolor: 'grey.50' }}>
         <CardContent>
           <Typography color="text.secondary" textAlign="center" py={2}>
-            イベント売り上げ目標を入力してデータ分析を表示します
+            月間売り上げ目標を入力してデータ分析を表示します
           </Typography>
         </CardContent>
       </Card>

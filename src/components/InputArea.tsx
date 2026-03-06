@@ -52,7 +52,7 @@ export function InputArea({
             </RadioGroup>
           </FormControl>
           <TextField
-            label="イベント売り上げ目標（円）"
+            label="月間売り上げ目標（円）"
             type="text"
             inputMode="numeric"
             value={monthlySalesTarget === '' ? '' : Number(monthlySalesTarget).toLocaleString()}
