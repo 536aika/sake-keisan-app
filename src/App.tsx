@@ -67,7 +67,7 @@ function App() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            酒代・タワー見積
+            酒代・タワー見積り
           </Typography>
           <Typography
             variant="caption"
