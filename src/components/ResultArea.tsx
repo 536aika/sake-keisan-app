@@ -1,3 +1,4 @@
+import { keyframes } from '@emotion/react';
 import {
   Card,
   CardContent,
@@ -8,6 +9,11 @@ import {
 import type { CalculationResult } from '../types';
 import { BOTTLE_LABELS } from '../constants';
 import { BudgetComparisonBar } from './BudgetComparisonBar';
+
+const blink15 = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+`;
 
 interface ResultAreaProps {
   result: CalculationResult | null;
@@ -64,7 +70,7 @@ export function ResultArea({ result }: ResultAreaProps) {
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
           <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
-            <Typography variant="caption" color="text.secondary">酒仕入代予算</Typography>
+            <Typography variant="caption" color="text.secondary">お酒仕入代予算</Typography>
             <Typography variant="h6" fontWeight="bold">{liquorBudget.toLocaleString()}円</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
@@ -72,16 +78,16 @@ export function ResultArea({ result }: ResultAreaProps) {
             <Typography variant="h6" fontWeight="bold">{towerBudget.toLocaleString()}円</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
-            <Typography variant="caption" color="text.secondary">月間想定費用（酒+タワー）</Typography>
+            <Typography variant="caption" color="text.secondary">月間想定費用（お酒+タワー）</Typography>
             <Typography variant="h6" fontWeight="bold">{eventBudget.toLocaleString()}円</Typography>
+          </Box>
+          <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
+            <Typography variant="caption" color="text.secondary">お酒発注額</Typography>
+            <Typography variant="h6" fontWeight="bold">{actualCost.toLocaleString()}円</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
             <Typography variant="caption" color="text.secondary">サービス可能グラス数</Typography>
             <Typography variant="h6" fontWeight="bold">{serviceableGlasses.toLocaleString()}グラス</Typography>
-          </Box>
-          <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
-            <Typography variant="caption" color="text.secondary">オリシャン発注額</Typography>
-            <Typography variant="h6" fontWeight="bold">{actualCost.toLocaleString()}円</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
             <Typography variant="caption" color="text.secondary">コストカット</Typography>
@@ -122,12 +128,20 @@ export function ResultArea({ result }: ResultAreaProps) {
         </Box>
 
         <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }} color="text.secondary">
-          オリシャン本数（おすすめ組み合わせ）
+          お酒本数（おすすめ組み合わせ）
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           <Box sx={{ width: { xs: 'calc(50% - 4px)', sm: 'calc(33.33% - 8px)' }, minWidth: 0 }}>
             <Typography variant="body2">{BOTTLE_LABELS.bottle15L}</Typography>
-            <Typography variant="h6">{bottleCounts.bottle15L}本</Typography>
+            <Typography
+              variant="h6"
+              color="error.main"
+              fontWeight="bold"
+              sx={{ animation: `${blink15} 0.5s ease-in-out 7` }}
+            >
+              {bottleCounts.bottle15L}本
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>※在庫要確認</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 4px)', sm: 'calc(33.33% - 8px)' }, minWidth: 0 }}>
             <Typography variant="body2">{BOTTLE_LABELS.bottle6L}</Typography>

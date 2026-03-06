@@ -1,7 +1,7 @@
 /** 店舗種別 */
 export type StoreType = 'host' | 'cabaret';
 
-/** 計算結果（オリシャン本数・15L/6L/3Lのみ） */
+/** 計算結果（お酒本数・15L/6L/3Lのみ） */
 export interface BottleCounts {
   bottle15L: number;
   bottle6L: number;

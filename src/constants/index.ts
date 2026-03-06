@@ -13,14 +13,14 @@ export const COST_PER_GLASS: Record<StoreType, number> = {
   cabaret: 350,
 } as const;
 
-/** オリシャン単価（円）通常 */
+/** お酒単価（円）通常 */
 export const BOTTLE_PRICES = {
   bottle3L: 18900,
   bottle6L: 51100,
   bottle15L: 157500,
 } as const;
 
-/** オリシャン単価（円）VIP（酒代予算20万以上で選択可） */
+/** お酒単価（円）VIP（酒代予算20万以上で選択可） */
 export const BOTTLE_PRICES_VIP = {
   bottle3L: 14800,
   bottle6L: 39800,
@@ -29,6 +29,12 @@ export const BOTTLE_PRICES_VIP = {
 
 /** VIP価格を表示する酒代予算の閾値（円） */
 export const VIP_BUDGET_THRESHOLD = 200000;
+
+/** おすすめ組み合わせで許容する超過額の上限（円）※5万未満に収める */
+export const MAX_RECOMMEND_OVER = 50000;
+
+/** この予算以下は15Lを使わず6Lと3Lのみで組み合わせる（円） */
+export const BUDGET_THRESHOLD_6L_3L_ONLY = 160000;
 
 /** 追加グラス単価（円） */
 export const EXTRA_GLASS_PRICE = 150;

@@ -119,7 +119,7 @@ export function MeetingSection({
 
         <Box sx={{ mb: 1 }}>
           <Typography variant="caption" color="text.secondary">
-            酒代（手入力）
+            お酒代（手入力）
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, flexWrap: 'wrap' }}>
             <TextField
@@ -137,7 +137,7 @@ export function MeetingSection({
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mt: 2, mb: 1 }}>
           <Typography variant="subtitle2" color="text.secondary">
-            オリシャン本数（おすすめ組み合わせ）
+            お酒本数（おすすめ組み合わせ）
           </Typography>
           <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.8 }}>
             総容量 {totalCapacityL}L
@@ -148,7 +148,7 @@ export function MeetingSection({
             <TextField
               label={BOTTLE_LABELS.bottle15L}
               type="number"
-              value={bottleCounts.bottle15L}
+              value={bottleCounts.bottle15L === 0 ? '' : bottleCounts.bottle15L}
               onChange={handleField('bottle15L')}
               inputProps={{ min: 0, step: 1 }}
               size="small"
@@ -157,7 +157,7 @@ export function MeetingSection({
             <TextField
               label={BOTTLE_LABELS.bottle6L}
               type="number"
-              value={bottleCounts.bottle6L}
+              value={bottleCounts.bottle6L === 0 ? '' : bottleCounts.bottle6L}
               onChange={handleField('bottle6L')}
               inputProps={{ min: 0, step: 1 }}
               size="small"
@@ -166,7 +166,7 @@ export function MeetingSection({
             <TextField
               label={BOTTLE_LABELS.bottle3L}
               type="number"
-              value={bottleCounts.bottle3L}
+              value={bottleCounts.bottle3L === 0 ? '' : bottleCounts.bottle3L}
               onChange={handleField('bottle3L')}
               inputProps={{ min: 0, step: 1 }}
               size="small"
@@ -252,6 +252,13 @@ export function MeetingSection({
             onClick={handleExport}
             disabled={isExporting}
             fullWidth
+            sx={{
+              background: 'linear-gradient(90deg, #f58529 0%, #dd2a7b 40%, #8134af 70%, #515bd4 100%)',
+              color: '#fff',
+              '&:hover': {
+                background: 'linear-gradient(90deg, #e07620 0%, #c9246a 40%, #6b2b92 70%, #4548c4 100%)',
+              },
+            }}
           >
             {isExporting ? '' : 'お打ち合わせ内容を保存'}
           </Button>

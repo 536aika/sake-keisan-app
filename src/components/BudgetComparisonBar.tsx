@@ -64,10 +64,10 @@ export function BudgetComparisonBar({ eventBudget, actualCost, maskAmount }: Bud
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
         <Typography variant="caption" color="text.secondary">
-          実費（オリシャン） {actualCost.toLocaleString()}円
+          実費（お酒） {actualCost.toLocaleString()}円
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          イベント想定費用（酒+タワー） {eventBudget.toLocaleString()}円 ({percent}%)
+          イベント想定費用（お酒+タワー） {eventBudget.toLocaleString()}円 ({percent}%)
         </Typography>
       </Box>
     </Box>
