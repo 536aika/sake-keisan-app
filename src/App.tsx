@@ -69,6 +69,14 @@ function App() {
           >
             酒代・タワー見積
           </Typography>
+          <Typography
+            variant="caption"
+            align="center"
+            color="text.secondary"
+            sx={{ display: 'block', mt: -1, mb: 1.5, letterSpacing: '0.08em' }}
+          >
+            〜 Estimate Cloud by Gotham 〜
+          </Typography>
           <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 2 }}>
             30,000件超の納品実績データに基づき、<br />
             イベント売上目標から酒仕入予算とオリシャン本数を高精度で計算します。
