@@ -124,7 +124,8 @@ export function MeetingSection({
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, flexWrap: 'wrap' }}>
             <TextField
               type="number"
-              value={liquorBudgetInput !== '' ? liquorBudgetInput : (defaultLiquorBudget > 0 ? String(defaultLiquorBudget) : '')}
+              value={liquorBudgetInput}
+              placeholder={defaultLiquorBudget > 0 ? String(defaultLiquorBudget) : undefined}
               onChange={(e) => onLiquorBudgetChange(e.target.value.replace(/\D/g, ''))}
               onBlur={handleLiquorBudgetBlur}
               inputProps={{ min: 0, step: 1000 }}
