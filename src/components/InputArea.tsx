@@ -55,7 +55,7 @@ export function InputArea({
             label="月間売り上げ目標（円）"
             type="text"
             inputMode="numeric"
-            value={monthlySalesTarget === '' ? '' : Number(monthlySalesTarget).toLocaleString()}
+            value={monthlySalesTarget}
             onChange={handleSalesChange}
             placeholder="例: 5000000"
             fullWidth
