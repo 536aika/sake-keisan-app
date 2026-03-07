@@ -52,9 +52,11 @@ function App() {
           minHeight: '100vh',
           py: { xs: 2, sm: 3 },
           px: 1,
+          display: 'flex',
+          justifyContent: 'center',
         }}
       >
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" sx={{ width: '100%', mx: 0 }}>
           <Typography
             variant="h4"
             align="center"
