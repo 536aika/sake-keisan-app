@@ -3,7 +3,6 @@ import {
   COST_PER_GLASS,
   BOTTLE_PRICES,
   GLASSES_PER_BOTTLE,
-  MAX_RECOMMEND_OVER,
   BUDGET_THRESHOLD_6L_3L_ONLY,
 } from '../constants';
 import { BOTTLE_PRICES_VIP } from '../constants';
@@ -29,79 +28,49 @@ function calcServiceableGlasses(liquorBudget: number, storeType: StoreType): num
 
 /**
  * おすすめ本数（自動）:
- * - 予算を5万以上超えない（超過は5万未満）
- * - 予算16万以下: 6Lと3Lのみで組み合わせ
- * - それ以外: 15Lを優先して組み合わせ
+ * - 発注合計額（自動計算）は「お酒仕入代予算」を超えない（合計 <= 予算）
+ * - 本数は 15L → 6L → 3L の順で、入れられるだけ入れる（残り予算で順に割り当て）
+ * - 予算16万以下は 15L を使わず、6L → 3L のみ
  */
 export function calcRecommendedBottleCounts(liquorBudget: number): BottleCounts {
   const p15 = BOTTLE_PRICES.bottle15L;
   const p6 = BOTTLE_PRICES.bottle6L;
   const p3 = BOTTLE_PRICES.bottle3L;
 
-  const max6 = Math.ceil(liquorBudget / p6);
-  const underBudget = (cost: number) => cost >= liquorBudget;
-  const withinOver = (over: number) => over < MAX_RECOMMEND_OVER;
+  if (liquorBudget <= 0) return { bottle15L: 0, bottle6L: 0, bottle3L: 0 };
 
-  if (liquorBudget <= BUDGET_THRESHOLD_6L_3L_ONLY) {
-    // 16万以下: 15L=0、6Lと3Lのみ。超過5万未満のうち超過最小、同点なら6L多め→3L少なめ
-    let best: BottleCounts | null = null;
-    let bestOver = Number.POSITIVE_INFINITY;
-    for (let bottle6L = max6; bottle6L >= 0; bottle6L--) {
-      const remaining = liquorBudget - bottle6L * p6;
-      const bottle3L = remaining <= 0 ? 0 : Math.ceil(remaining / p3);
-      const cost = bottle6L * p6 + bottle3L * p3;
-      if (!underBudget(cost)) continue;
-      const over = cost - liquorBudget;
-      if (!withinOver(over)) continue;
-      if (best === null || over < bestOver || (over === bestOver && bottle6L > best!.bottle6L)) {
-        best = { bottle15L: 0, bottle6L, bottle3L };
-        bestOver = over;
-      }
+  const clampToBudget = (counts: BottleCounts): BottleCounts => {
+    let c: BottleCounts = {
+      bottle15L: Math.max(0, Math.floor(counts.bottle15L)),
+      bottle6L: Math.max(0, Math.floor(counts.bottle6L)),
+      bottle3L: Math.max(0, Math.floor(counts.bottle3L)),
+    };
+    const cost = (x: BottleCounts) => x.bottle15L * p15 + x.bottle6L * p6 + x.bottle3L * p3;
+    // 予算超えしていたら、優先順を崩さないように小さいサイズから減らす
+    while (cost(c) > liquorBudget && (c.bottle3L > 0 || c.bottle6L > 0 || c.bottle15L > 0)) {
+      if (c.bottle3L > 0) c = { ...c, bottle3L: c.bottle3L - 1 };
+      else if (c.bottle6L > 0) c = { ...c, bottle6L: c.bottle6L - 1 };
+      else c = { ...c, bottle15L: c.bottle15L - 1 };
     }
-    if (best) return best;
-    const bottle3L = Math.max(1, Math.ceil(liquorBudget / p3));
-    return { bottle15L: 0, bottle6L: 0, bottle3L };
-  }
-
-  // 16万超: 15L優先。超過5万未満に収まる組み合わせのうち 15L多め→6L多め→超過少なめ→3L少なめ
-  const max15 = Math.ceil(liquorBudget / p15);
-  let best: BottleCounts | null = null;
-  let bestOver = Number.POSITIVE_INFINITY;
-
-  const isBetter = (
-    c: BottleCounts,
-    over: number,
-    b: BottleCounts | null,
-    bOver: number
-  ): boolean => {
-    if (b === null) return true;
-    if (c.bottle15L !== b.bottle15L) return c.bottle15L > b.bottle15L;
-    if (c.bottle6L !== b.bottle6L) return c.bottle6L > b.bottle6L;
-    if (over !== bOver) return over < bOver;
-    return c.bottle3L < b.bottle3L;
+    return c;
   };
 
-  for (let bottle15L = max15; bottle15L >= 0; bottle15L--) {
-    for (let bottle6L = max6; bottle6L >= 0; bottle6L--) {
-      const baseCost = bottle15L * p15 + bottle6L * p6;
-      const remaining = liquorBudget - baseCost;
-      const bottle3L = remaining <= 0 ? 0 : Math.ceil(remaining / p3);
-      const cost = baseCost + bottle3L * p3;
-      if (!underBudget(cost)) continue;
-      const over = cost - liquorBudget;
-      if (!withinOver(over)) continue;
-      if (isBetter({ bottle15L, bottle6L, bottle3L }, over, best, bestOver)) {
-        best = { bottle15L, bottle6L, bottle3L };
-        bestOver = over;
-      }
-    }
+  // 16万以下: 15Lは使わず 6L→3L の順で割り当て（合計 <= 予算）
+  if (liquorBudget <= BUDGET_THRESHOLD_6L_3L_ONLY) {
+    const bottle6L = Math.max(0, Math.floor(liquorBudget / p6));
+    const remAfter6 = Math.max(0, liquorBudget - bottle6L * p6);
+    const bottle3L = Math.max(0, Math.floor(remAfter6 / p3));
+    return clampToBudget({ bottle15L: 0, bottle6L, bottle3L });
   }
 
-  if (!best) {
-    const bottle3L = Math.max(1, Math.ceil(liquorBudget / p3));
-    return { bottle15L: 0, bottle6L: 0, bottle3L };
-  }
-  return best;
+  // 16万超: 15L→6L→3L の順で、残り予算に収まるだけ割り当て（合計 <= 予算）
+  const bottle15L = Math.max(0, Math.floor(liquorBudget / p15));
+  const remAfter15 = Math.max(0, liquorBudget - bottle15L * p15);
+  const bottle6L = Math.max(0, Math.floor(remAfter15 / p6));
+  const remAfter6 = Math.max(0, remAfter15 - bottle6L * p6);
+  const bottle3L = Math.max(0, Math.floor(remAfter6 / p3));
+
+  return clampToBudget({ bottle15L, bottle6L, bottle3L });
 }
 
 /**
@@ -161,8 +130,15 @@ export function calculate(
   const towerBudget = Math.round(monthlySalesTarget * PURCHASE_RATES[storeType] * 0.5);
   const eventBudget = liquorBudget + towerBudget; // 酒 + タワー台 = イベント想定費用
   const serviceableGlasses = calcServiceableGlasses(liquorBudget, storeType);
-  const bottleCounts = calcRecommendedBottleCounts(liquorBudget);
-  const usedBudget = calcOrderCost(bottleCounts);
+  let bottleCounts = calcRecommendedBottleCounts(liquorBudget);
+  let usedBudget = calcOrderCost(bottleCounts);
+  // 念のため: どんな状況でも「発注合計額 <= お酒仕入代予算」に収める
+  while (usedBudget > liquorBudget && (bottleCounts.bottle3L > 0 || bottleCounts.bottle6L > 0 || bottleCounts.bottle15L > 0)) {
+    if (bottleCounts.bottle3L > 0) bottleCounts = { ...bottleCounts, bottle3L: bottleCounts.bottle3L - 1 };
+    else if (bottleCounts.bottle6L > 0) bottleCounts = { ...bottleCounts, bottle6L: bottleCounts.bottle6L - 1 };
+    else bottleCounts = { ...bottleCounts, bottle15L: bottleCounts.bottle15L - 1 };
+    usedBudget = calcOrderCost(bottleCounts);
+  }
   // お酒発注で「タワー台が浮く」前提の比較: (酒+タワー) と 実費(お酒発注額)
   const remainingBudget = eventBudget - usedBudget;
   const savedAmount = remainingBudget;

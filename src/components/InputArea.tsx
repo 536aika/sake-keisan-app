@@ -10,6 +10,7 @@ import {
   Typography,
   Box,
 } from '@mui/material';
+import { useState } from 'react';
 import { STORE_TYPE_LABELS } from '../constants';
 import type { StoreType } from '../types';
 
@@ -26,10 +27,15 @@ export function InputArea({
   onStoreTypeChange,
   onMonthlySalesTargetChange,
 }: InputAreaProps) {
+  const [isEditingSales, setIsEditingSales] = useState(false);
+
   const handleSalesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value.replace(/\D/g, '');
     onMonthlySalesTargetChange(v);
   };
+
+  const formattedMonthlySalesTarget =
+    monthlySalesTarget === '' ? '' : Number(monthlySalesTarget).toLocaleString();
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -55,8 +61,10 @@ export function InputArea({
             label="月間売り上げ目標（円）"
             type="text"
             inputMode="numeric"
-            value={monthlySalesTarget}
+            value={isEditingSales ? monthlySalesTarget : formattedMonthlySalesTarget}
             onChange={handleSalesChange}
+            onFocus={() => setIsEditingSales(true)}
+            onBlur={() => setIsEditingSales(false)}
             placeholder="例: 5000000"
             fullWidth
             variant="outlined"

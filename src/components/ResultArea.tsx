@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import type { CalculationResult } from '../types';
 import { BOTTLE_LABELS } from '../constants';
+import { calcOrderCost, calcRecommendedBottleCounts } from '../utils/calculations';
 import { BudgetComparisonBar } from './BudgetComparisonBar';
 
 const blink15 = keyframes`
@@ -33,11 +34,18 @@ export function ResultArea({ result }: ResultAreaProps) {
   }
 
   const { liquorBudget, towerBudget, eventBudget, serviceableGlasses, bottleCounts, usedBudget } = result;
-  const actualCost = usedBudget;
+
+  // 念のため: どんな状態でも「発注合計額 <= お酒仕入代予算」に収めた表示にする
+  const safeBottleCounts =
+    usedBudget > liquorBudget ? calcRecommendedBottleCounts(liquorBudget) : bottleCounts;
+  const safeUsedBudget =
+    usedBudget > liquorBudget ? calcOrderCost(safeBottleCounts) : usedBudget;
+
+  const actualCost = safeUsedBudget;
   const savedAmount = eventBudget - actualCost;
   const instagramGradient = 'linear-gradient(90deg, #f58529 0%, #dd2a7b 40%, #8134af 70%, #515bd4 100%)';
   const isNegative = savedAmount < 0;
-  const serviceableFromOrder = Math.floor(usedBudget / 350);
+  const serviceableFromOrder = Math.floor(safeUsedBudget / 350);
 
   return (
     <Card
@@ -90,7 +98,7 @@ export function ResultArea({ result }: ResultAreaProps) {
             <Typography variant="h6" fontWeight="bold">{serviceableGlasses.toLocaleString()}グラス</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
-            <Typography variant="caption" color="text.secondary">コストカット</Typography>
+            <Typography variant="caption" color="text.secondary">手残りUP</Typography>
             <Box
               sx={{
                 mt: 0.5,
@@ -139,24 +147,24 @@ export function ResultArea({ result }: ResultAreaProps) {
               fontWeight="bold"
               sx={{ animation: `${blink15} 0.5s ease-in-out 7` }}
             >
-              {bottleCounts.bottle15L}本
+              {safeBottleCounts.bottle15L}本
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>※在庫要確認</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 4px)', sm: 'calc(33.33% - 8px)' }, minWidth: 0 }}>
             <Typography variant="body2">{BOTTLE_LABELS.bottle6L}</Typography>
-            <Typography variant="h6">{bottleCounts.bottle6L}本</Typography>
+            <Typography variant="h6">{safeBottleCounts.bottle6L}本</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 4px)', sm: 'calc(33.33% - 8px)' }, minWidth: 0 }}>
             <Typography variant="body2">{BOTTLE_LABELS.bottle3L}</Typography>
-            <Typography variant="h6">{bottleCounts.bottle3L}本</Typography>
+            <Typography variant="h6">{safeBottleCounts.bottle3L}本</Typography>
           </Box>
         </Box>
 
         <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'baseline' }}>
           <Box>
             <Typography variant="caption" color="text.secondary">発注合計額（自動計算）</Typography>
-            <Typography variant="h6" fontWeight="bold">{usedBudget.toLocaleString()}円</Typography>
+            <Typography variant="h6" fontWeight="bold">{safeUsedBudget.toLocaleString()}円</Typography>
           </Box>
           <Box>
             <Typography variant="caption" color="text.secondary">サービス可能グラス数</Typography>

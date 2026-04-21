@@ -49,7 +49,7 @@ export function MeetingSection({
 }: MeetingSectionProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [taxIncluded, setTaxIncluded] = useState(false);
+  const [isEditingLiquorBudget, setIsEditingLiquorBudget] = useState(false);
 
   const liquorBudgetNum = liquorBudgetInput === '' ? defaultLiquorBudget : parseNonNegativeInt(liquorBudgetInput) || 0;
   const showVip = liquorBudgetNum >= VIP_BUDGET_THRESHOLD;
@@ -60,8 +60,6 @@ export function MeetingSection({
   const extraGlassFee = glassCount * EXTRA_GLASS_PRICE;
   const combinedTotal = orderCost + extraGlassFee;
   const baselineTowerCost = serviceableGlasses * 200;
-  const extraGlassFeeWithTax = taxIncluded ? Math.round(extraGlassFee * 1.1) : extraGlassFee;
-  const combinedTotalWithTax = taxIncluded ? Math.round(combinedTotal * 1.1) : combinedTotal;
 
 
   const handleLiquorBudgetBlur = () => {
@@ -123,12 +121,22 @@ export function MeetingSection({
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, flexWrap: 'wrap' }}>
             <TextField
-              type="number"
-              value={liquorBudgetInput}
-              placeholder={defaultLiquorBudget > 0 ? String(defaultLiquorBudget) : undefined}
+              type="text"
+              inputMode="numeric"
+              value={
+                isEditingLiquorBudget
+                  ? liquorBudgetInput
+                  : liquorBudgetInput === ''
+                    ? ''
+                    : Number(liquorBudgetInput).toLocaleString()
+              }
+              placeholder={defaultLiquorBudget > 0 ? defaultLiquorBudget.toLocaleString() : undefined}
               onChange={(e) => onLiquorBudgetChange(e.target.value.replace(/\D/g, ''))}
-              onBlur={handleLiquorBudgetBlur}
-              inputProps={{ min: 0, step: 1000 }}
+              onFocus={() => setIsEditingLiquorBudget(true)}
+              onBlur={() => {
+                setIsEditingLiquorBudget(false);
+                handleLiquorBudgetBlur();
+              }}
               size="small"
               sx={{ width: 140 }}
             />
@@ -203,7 +211,7 @@ export function MeetingSection({
             />
             <Typography variant="caption" color="text.secondary">追加グラス代</Typography>
             <Typography variant="h6" fontWeight="bold">
-              {extraGlassFeeWithTax.toLocaleString()}円{taxIncluded ? '（税込）' : ''}
+              {extraGlassFee.toLocaleString()}円
             </Typography>
           </Box>
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
@@ -229,21 +237,8 @@ export function MeetingSection({
         <Box sx={{ mt: 2 }}>
           <Typography variant="caption" color="text.secondary">合計額（発注合計額＋追加グラス代）</Typography>
           <Typography variant="h6" sx={{ mt: 0.5, color: 'text.secondary' }}>
-            {combinedTotalWithTax.toLocaleString()}円{taxIncluded ? '（税込）' : ''}
+            {combinedTotal.toLocaleString()}円
           </Typography>
-        </Box>
-
-        <Box sx={{ mt: 2 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={taxIncluded}
-                onChange={(_, c) => setTaxIncluded(c)}
-                color="primary"
-              />
-            }
-            label="税込"
-          />
         </Box>
 
         <Box sx={{ mt: 1 }}>

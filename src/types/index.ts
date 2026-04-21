@@ -24,7 +24,7 @@ export interface CalculationResult {
   usedBudget: number;
   /** 残予算 */
   remainingBudget: number;
-  /** 予算との差（コストカット額） */
+  /** 予算との差（カット額） */
   savedAmount: number;
 }
 

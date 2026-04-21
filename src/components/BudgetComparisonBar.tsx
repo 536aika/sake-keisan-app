@@ -28,7 +28,7 @@ export function BudgetComparisonBar({ eventBudget, actualCost, maskAmount }: Bud
         </Typography>
         <Box sx={{ textAlign: 'right' }}>
           <Typography variant="caption" color="text.secondary">
-            {isUnderBudget ? 'コストカット' : '超過'}
+            {isUnderBudget ? 'カット' : '超過'}
           </Typography>
           <Typography
             variant={isNegative ? 'body1' : 'h6'}
