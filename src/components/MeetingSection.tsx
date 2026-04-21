@@ -148,7 +148,11 @@ export function MeetingSection({
           <Typography variant="subtitle2" color="text.secondary">
             お酒本数（おすすめ組み合わせ）
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.8 }}>
+          <Typography
+            variant="caption"
+            color={totalCapacityL > 30 ? 'error.main' : 'text.secondary'}
+            sx={{ opacity: 0.8, fontWeight: totalCapacityL > 30 ? 700 : 400 }}
+          >
             総容量 {totalCapacityL}L
           </Typography>
         </Box>
