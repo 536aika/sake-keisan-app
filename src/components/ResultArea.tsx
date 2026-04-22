@@ -98,7 +98,7 @@ export function ResultArea({ result }: ResultAreaProps) {
             <Typography variant="h6" fontWeight="bold">{serviceableGlasses.toLocaleString()}グラス</Typography>
           </Box>
           <Box sx={{ width: { xs: 'calc(50% - 8px)', sm: 'calc(33.33% - 12px)' }, minWidth: 0 }}>
-            <Typography variant="caption" color="text.secondary">手残りUP</Typography>
+            <Typography variant="caption" color="text.secondary">手取りUP</Typography>
             <Box
               sx={{
                 mt: 0.5,
